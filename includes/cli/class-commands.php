@@ -30,9 +30,10 @@ class WPCP_Seeder_Command extends WP_CLI_Command {
 	        );
 
 	        if( !$post_id  ) continue;
-
-	        $campaign_type = $faker->randomElements(array_keys(wpcp_get_campaign_types()));
-	        update_post_meta( $post_id, '_wpcp_campaign_type', $campaign_type[0]);
+			if( $type == 'random' ){
+				$type = $faker->randomElements(array_keys(wpcp_get_campaign_types()))[0];
+			}
+	        update_post_meta( $post_id, '_wpcp_campaign_type', $type);
 	        update_post_meta( $post_id, '_wpcp_active', $faker->numberBetween(0, 1));
 	        update_post_meta( $post_id, '_wpcp_campaign_target', $faker->numberBetween($min = 1, $max = 5));
 	        update_post_meta( $post_id, '_wpcp_frequency', $faker->numberBetween($min = 1, $max = 5));
@@ -58,7 +59,7 @@ class WPCP_Seeder_Command extends WP_CLI_Command {
 		    update_post_meta( $post_id, '_wpcp_title_limit', $faker->numberBetween($min = 40, $max = 80));
 		    update_post_meta( $post_id, '_wpcp_content_limit', $faker->numberBetween($min = 500, $max = 2000));
 
-			$this->populate_campaign_specific_contents( $post_id, $campaign_type[0]);
+			$this->populate_campaign_specific_contents( $post_id, $type );
 
 
 
@@ -82,13 +83,14 @@ class WPCP_Seeder_Command extends WP_CLI_Command {
 		    case 'feeds':
 			    $feed_links = [];
 			    for ($i=1; $i <= $size; $i++ ){
-				    $link = $faker->url;
-				    $parsed_url = parse_url($link);
-				    $feed_links[] = untrailingslashit(esc_url_raw($parsed_url['host']));
+			    	$links = $this->get_feed_link();
+				    $link = $links[mt_rand(0, count($links) - 1)];
+				    $feed_links[] = untrailingslashit(esc_url_raw($link));
 			    }
 
 			    $string_feed_links = implode(PHP_EOL, $feed_links);
 			    update_post_meta( $post_id, '_wpcp_feed_links', $string_feed_links);
+			    update_post_meta( $post_id, '_wpcp_force_feed', '1');
 				//@todo add premimum data
 
 			    break;
@@ -136,6 +138,60 @@ class WPCP_Seeder_Command extends WP_CLI_Command {
 	    }
 
 
+    }
+
+    function get_feed_link(){
+    	$links = array(
+		    'http://rss.cnn.com/rss/cnn_topstories.rss',
+		    'http://feeds.nytimes.com/nyt/rss/HomePage',
+			'http://www.washingtonpost.com/rss/',
+			'http://hosted.ap.org/lineups/USHEADS-rss_2.0.xml?SITE=RANDOM&SECTION=HOME',
+			'http://rssfeeds.usatoday.com/usatoday-NewsTopStories',
+			'http://www.npr.org/rss/rss.php?id=1001',
+			'http://feeds.reuters.com/reuters/topNews',
+			'http://newsrss.bbc.co.uk/rss/newsonline_world_edition/americas/rss.xml',
+			'http://www.sltrib.com/rss/feed/?sec=/News/Utah/&level=1',
+			'http://www.deseretnews.com/site/rss',
+			'http://www.ksl.com/xml/148.rss',
+			'http://www.utah.gov/whatsnew/rss.xml',
+			'http://rssfeeds.thespectrum.com/stgeorge/news',
+			'http://topics.nytimes.com/top/news/national/usstatesterritoriesandpossessions/utah/index.html?inline=nyt-geo&rss=1',
+			'http://www.uen.org/feeds/rss/news.xml.php',
+			'https://www.ed.gov/feed',
+			'http://www.smartbrief.com/servlet/rss?b=ASCD',
+			'http://www.npr.org/rss/rss.php?id=1013',
+			'http://www.techlearning.com/RSS',
+			'http://hosted.ap.org/lineups/SCIENCEHEADS-rss_2.0.xml?SITE=OHLIM&SECTION=HOME',
+			'http://feeds.sciencedaily.com/sciencedaily',
+			'http://feeds.nature.com/nature/rss/current',
+			'http://www.nasa.gov/rss/image_of_the_day.rss',
+			'http://www.techlearning.com/RSS',
+			'http://feeds.wired.com/wired/index',
+			'http://feeds.nytimes.com/nyt/rss/Technology',
+			'http://www.npr.org/rss/rss.php?id=1019',
+			'http://feeds.feedburner.com/time/gadgetoftheweek',
+			'http://feeds.surfnetkids.com/SurfingTheNetWithKids',
+			'http://rss.macworld.com/macworld/feeds/main',
+			'http://feeds.pcworld.com/pcworld/latestnews',
+			'http://www.techworld.com/news/rss',
+			'http://feeds.feedburner.com/FrontlineEditorsNotes',
+			'http://www.pbs.org/wgbh/nova/rss/nova.xml',
+			'http://dictionary.reference.com/wordoftheday/wotd.rss',
+			'http://hosted.ap.org/lineups/SPORTSHEADS-rss_2.0.xml?SITE=VABRM&SECTION=HOME',
+			'http://www.si.com/rss/si_topstories.rss',
+			'http://feeds1.nytimes.com/nyt/rss/Sports',
+			'http://www.nba.com/jazz/rss.xml',
+			'http://www.npr.org/rss/rss.php?id=1008',
+			'http://www.newyorker.com/feed/humor',
+			'http://www.npr.org/rss/rss.php?id=13',
+			'http://www.npr.org/rss/rss.php?id=1045',
+			'http://www.nationalgeographic.com/adventure/nga.xml',
+			'http://feeds.feedburner.com/TheDailyPuppy',
+			'http://davidkphotography.com/index.php?x=rss',
+			'http://feeds.feedburner.com/animals',
+	    );
+
+	    return $links;
     }
 
 
