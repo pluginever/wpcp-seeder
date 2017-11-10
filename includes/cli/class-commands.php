@@ -97,9 +97,10 @@ class WPCP_Seeder_Command extends WP_CLI_Command {
 		    case 'articles':
 			    $words = [];
 			    for ($i=1; $i <= $size; $i++ ){
-				    $words[] = str_replace('.', '', sanitize_title($faker->realText($maxNbChars = 20, $indexSize = 1)));
+				    $words[] = str_replace('.', '', sanitize_text_field($faker->realText($maxNbChars = 20, $indexSize = 1)));
 			    }
 			    $keywords = implode(PHP_EOL, $words);
+
 			    update_post_meta( $post_id, '_wpcp_keywords', $keywords);
 			    update_post_meta( $post_id, '_wpcp_article_source', $faker->randomElement(array_keys(wpcp_get_article_sources()))[0]);
 
